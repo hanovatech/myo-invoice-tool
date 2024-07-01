@@ -5,11 +5,12 @@
     "street": "Elsa-Buchwitz-Str. 9",
     "zip": "31789",
     "city": "Hameln",
-    "email": "buchhaltung@makeyouroffice.de",
+    "email": "buchhaltung@keyyou.de",
     "taxId": "",
+    "ustId": "",
     "bankName": "Sparkasse Hameln",
-    "iban": "DE01 2345 6789 0123 4567 89",
-    "bic": "ABCDEFGH200"
+    "iban": "DE88 2519 3331 1178 8291 00",
+    "bic": "GENODEF1PAT"
   },
   "paths": {
     "invoicesExcelFile": "./Ordnerstruktur/Rechnungen.xlsx",

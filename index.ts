@@ -15,6 +15,7 @@ const config = await (Bun.file("config.json")).json();
       name: "action",
       choices: [
         "Rechnungen erstellen",
+        "Rechnung neu generieren",
         "Rechnung stornieren",
         "Rechnung löschen"
       ]
@@ -26,6 +27,7 @@ const config = await (Bun.file("config.json")).json();
       createInvoices();
       break;
     case "Rechnung neu generieren":
+      regenerateInvoice();
       break;
     case "Rechnung stornieren":
       cancelInvoice();
@@ -76,6 +78,37 @@ async function createInvoices() {
     });
 }
 
+async function regenerateInvoice() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "Welche Rechnung soll neu generiert werden? (z.B. MYO-F001-0001)",
+        name: "invoiceNumber",
+      }
+    ]).then(async (answers) => {
+      try {
+        const invoiceOptions = await Bun.file(`${config.paths.invoiceOptionsDirectory}/${answers.invoiceNumber}.json`).json();
+
+        const invoice = new Invoice(invoiceOptions);
+        await saveInvoice(invoice);
+        console.info(`✅ Rechnung ${answers.invoiceNumber} wurde neu generiert\n`)
+      } catch(err) {
+        if (err.syscall === "open" && err.code === "ENOENT") {
+          console.error(`[FEHLER] Rechnungsnummer "${answers.invoiceNumber}" wurde nicht gefunden`);
+        } else {
+          console.error(err);
+        }
+      }
+    }).catch((error) => {
+      if (error.isTtyError) {
+        console.error("Prompt couldn't be rendered in the current environment")
+      } else {
+        console.error("Something went wrong!", error);
+      }
+    });
+}
+
 
 async function cancelInvoice() {
   inquirer
@@ -107,7 +140,7 @@ async function cancelInvoice() {
         console.info(`✅ Stornorechnung für ${answers.invoiceNumber} wurde erstellt\n`)
       } catch(err) {
         if (err.syscall === "open" && err.code === "ENOENT") {
-          console.error(`[FEHLER] Rechnungsnummer "${answers.invoiceNumber}" wurde nicht gefunden.`);
+          console.error(`[FEHLER] Rechnungsnummer "${answers.invoiceNumber}" wurde nicht gefunden`);
         } else {
           console.error(err);
         }

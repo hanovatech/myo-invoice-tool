@@ -44,7 +44,8 @@ export interface InvoiceOptions {
     zip: string;
     city: string;
     email: string;
-    taxId: string;
+    taxId?: string;
+    ustId?: string;
     bankName: string;
     iban: string;
     bic: string;
@@ -121,8 +122,8 @@ export class Invoice {
         size: "A4",
         marginTop: 40,
         marginBottom: 40,
-        marginLeft: 40,
-        marginRight: 40,
+        marginLeft: 50,
+        marginRight: 50,
         tableWidths: {
           service: .5,
           amount: .1,
@@ -210,7 +211,7 @@ export class Invoice {
     let _textAlign = options.align || "left";
     let _color = options.color || "#000";
     let _marginTop = options.marginTop || 0;
-    let _maxWidth = options.maxWidth || (this.document.page.width - this.cursor.x) - (this.options.document.marginLeft + this.options.document.marginRight);
+    let _maxWidth = options.maxWidth || this.document.page.width - (this.options.document.marginLeft + this.options.document.marginRight);
 
     // add new page if text is too long
     const heightOfString = this.document.heightOfString(text, { width: _maxWidth })
@@ -303,6 +304,8 @@ export class Invoice {
     const _sender = this.options.sender
     const _recipient = this.options.recipient
     const _items = this.options.items
+    const _maxWidth = this.document.page.width - (this.options.document.marginLeft + this.options.document.marginRight);
+    const _recipientWidth = _maxWidth * .5
 
     // sender details
     this.setText(_sender.name, { align: "right", fontWeight: "bold" })
@@ -313,29 +316,30 @@ export class Invoice {
 
     // recipient details
     const _yBeforeDetails = this.cursor.y
-    if (_recipient.company) this.setText(_recipient.company, { fontWeight: "bold", maxWidth: 250 })
-    if (_recipient.name) this.setText(_recipient.name, { fontWeight: _recipient.company ? "normal" : "bold" })
-    this.setText(_recipient.street, { marginTop: 2 })
-    this.setText(`${_recipient.zip} ${_recipient.city}`, { marginTop: 2 })
+    if (_recipient.company) this.setText(_recipient.company, { fontWeight: "bold", maxWidth: _recipientWidth })
+    if (_recipient.name) this.setText(_recipient.name, { fontWeight: _recipient.company ? "normal" : "bold", maxWidth: _recipientWidth })
+    this.setText(_recipient.street, { marginTop: 2, maxWidth: _recipientWidth })
+    this.setText(`${_recipient.zip} ${_recipient.city}`, { marginTop: 2, maxWidth: _recipientWidth })
     let _yAfterDetails = this.cursor.y
-    this.setCursor("y", _yBeforeDetails)
 
     // invoice details
+    this.setCursor("y", _yBeforeDetails)
+
     if (_recipient.id) {
-      this.setCursor("x", 290)
+      this.setCursor("x", _recipientWidth + this.options.document.marginLeft + 20)
       this.setText("Kundennr.:", { maxWidth: 110, align: "right", skipDown: true })
-      this.cursor.x += 120
+      this.resetCursor("x")
       this.setText(String(_recipient.id), { fontWeight: "bold", align: "right" })
     }
 
-    this.setCursor("x", 290)
+    this.setCursor("x", _recipientWidth + this.options.document.marginLeft + 20)
     this.setText("Rechnungsnr.:", { marginTop: 2, maxWidth: 110, align: "right", skipDown: true })
-    this.cursor.x += 120
-    this.setText(_invoice.number, { marginTop: 2, fontWeight: "bold", align: "right"})
+    this.resetCursor("x")
+    this.setText(_invoice.number, { marginTop: 2, fontWeight: "bold", align: "right" })
 
-    this.setCursor("x", 290)
+    this.setCursor("x", _recipientWidth + this.options.document.marginLeft + 20)
     this.setText("Rechnungsdatum:", { marginTop: 2, maxWidth: 110, align: "right", skipDown: true })
-    this.cursor.x += 120
+    this.resetCursor("x")
     this.setText(_invoice.date, { marginTop: 2, fontWeight: "bold", align: "right" })
 
     if (_items.length > 1) {
@@ -345,16 +349,16 @@ export class Invoice {
       if (_dates.length > 1) {
         const firstDateString = `${_dates[0]?.split(".")[0]}.${_dates[0]?.split(".")[1]}.`
         const deliveryPeriodString = `${firstDateString}-${_dates[_dates.length - 1]}`
-        this.setCursor("x", 290)
+        this.setCursor("x", _recipientWidth + this.options.document.marginLeft + 20)
         this.setText("Lieferzeitraum:", { marginTop: 2, maxWidth: 110, align: "right", skipDown: true })
-        this.cursor.x += 120
+        this.resetCursor("x")
         this.setText(deliveryPeriodString, { marginTop: 2, fontWeight: "bold", align: "right" })
       }
     } else {
       if (_items.length && _items[0].date) {
-        this.setCursor("x", 290)
+        this.setCursor("x", _recipientWidth + this.options.document.marginLeft + 20)
         this.setText("Lieferdatum:", { marginTop: 2, maxWidth: 110, align: "right", skipDown: true })
-        this.cursor.x += 120
+        this.resetCursor("x")
         this.setText(_items[0].date, { marginTop: 2, fontWeight: "bold", align: "right" })
       }
     }
@@ -513,6 +517,13 @@ export class Invoice {
       this.setText("St.Nr.: ", { marginTop: 4, skipDown: true })
       this.cursor.x += 40
       this.setText(this.options.sender.taxId, { marginTop: 4 })
+    }
+
+    if (this.options.sender.ustId) {
+      this.resetCursor("x")
+      this.setText("USt.Id.: ", { marginTop: 4, skipDown: true })
+      this.cursor.x += 40
+      this.setText(this.options.sender.ustId, { marginTop: 4 })
     }
 
     this.resetCursor("x")
