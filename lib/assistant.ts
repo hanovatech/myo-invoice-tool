@@ -212,7 +212,7 @@ export class Assistant {
         description: `${i.total.toFixed(2).replace(".", ",")}€ x 20%`,
         amount: 1,
         unit: "Stück",
-        price: i.total * 0.2,
+        price: i.total * 0.15,
       }
     });
 

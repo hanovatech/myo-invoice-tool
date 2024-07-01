@@ -22,7 +22,7 @@
       "invoice": {
         "message": "Sehr geehrter Kunde,\n\nvielen Dank für Ihren Auftrag. Anbei erhalten Sie die Rechnung für die erbrachten Leistungen.",
         "terms": "Bitte überweisen Sie den vollständigen Rechnungsbetrag innerhalb von 14 Tagen auf die unten stehende Bankverbindung.\n\nVielen Dank für Ihr Vertrauen!",
-        "taxFreeTerms": "Bitte überweisen Sie den vollständigen Rechnungsbetrag innerhalb von 14 Tagen auf die unten stehende Bankverbindung.\n\nGemäß § XXX UStG wird keine Umsatzsteuer berechnet.\n\nVielen Dank für Ihr Vertrauen!"
+        "taxFreeTerms": "Bitte überweisen Sie den vollständigen Rechnungsbetrag innerhalb von 14 Tagen auf die unten stehende Bankverbindung.\n\nGemäß §19 Abs. 1 UStG wird keine Umsatzsteuer berechnet.\n\nVielen Dank für Ihr Vertrauen!"
       },
       "email": {
         "subject": "Neue Rechnung {{invoiceNumber}} - {{name}}",
@@ -42,7 +42,7 @@
     "cancellation": {
       "message": "Sehr geehrter Kunde,\n\ngemäß unserer Absprache schreiben wir Ihnen die folgenden Beträge gut.",
       "terms": "Vielen Dank für Ihr Vertrauen!",
-      "taxFreeTerms": "Gemäß § XXX UStG wird keine Umsatzsteuer berechnet.\n\nVielen Dank für Ihr Vertrauen!"
+      "taxFreeTerms": "Gemäß §19 Abs. 1 UStG wird keine Umsatzsteuer berechnet.\n\nVielen Dank für Ihr Vertrauen!"
     }
   }
 }
