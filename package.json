@@ -1,0 +1,20 @@
+{
+  "name": "myo-invoice-tool",
+  "module": "index.ts",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/inquirer": "^9.0.7",
+    "@types/lodash": "^4.17.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "type": "module",
+  "dependencies": {
+    "@sindresorhus/slugify": "^2.2.1",
+    "inquirer": "^9.2.20",
+    "lodash": "^4.17.21",
+    "pdfkit": "^0.15.0",
+    "xlsx": "^0.18.5"
+  }
+}

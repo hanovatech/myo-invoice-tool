@@ -1,0 +1,48 @@
+{
+  "provisionSender": {
+    "id": "KY",
+    "name": "KEYYOU UG",
+    "street": "Elsa-Buchwitz-Str. 9",
+    "zip": "31789",
+    "city": "Hameln",
+    "email": "buchhaltung@makeyouroffice.de",
+    "taxId": "",
+    "bankName": "Sparkasse Hameln",
+    "iban": "DE01 2345 6789 0123 4567 89",
+    "bic": "ABCDEFGH200"
+  },
+  "paths": {
+    "invoicesExcelFile": "./Ordnerstruktur/Rechnungen.xlsx",
+    "freelancerDirectory": "./Ordnerstruktur/Freelancer",
+    "provisionInvoicesDirectory": "./Ordnerstruktur/Provisionsrechnungen",
+    "invoiceOptionsDirectory": "./Ordnerstruktur/invoice-options"
+  },
+  "texts": {
+    "freelancer": {
+      "invoice": {
+        "message": "Sehr geehrter Kunde,\n\nvielen Dank für Ihren Auftrag. Anbei erhalten Sie die Rechnung für die erbrachten Leistungen.",
+        "terms": "Bitte überweisen Sie den vollständigen Rechnungsbetrag innerhalb von 14 Tagen auf die unten stehende Bankverbindung.\n\nVielen Dank für Ihr Vertrauen!",
+        "taxFreeTerms": "Bitte überweisen Sie den vollständigen Rechnungsbetrag innerhalb von 14 Tagen auf die unten stehende Bankverbindung.\n\nGemäß § XXX UStG wird keine Umsatzsteuer berechnet.\n\nVielen Dank für Ihr Vertrauen!"
+      },
+      "email": {
+        "subject": "Neue Rechnung {{invoiceNumber}} - {{name}}",
+        "body": "Sehr geehrter Kunde,\n\nanbei erhalten Sie die Rechnung für die erbrachten Leistungen.\n\nBitte überweisen Sie den vollständigen Rechnungsbetrag innerhalb von 14 Tagen auf die unten stehende Bankverbindung.\n\nVielen Dank für Ihr Vertrauen!"
+      }
+    },
+    "provision": {
+      "invoice": {
+        "message": "Liebe Assistentin,\n\nanbei erhältst du die Rechnung über die Provisionen für die Vermittlung der Kunden an dich.",
+        "terms": "Bitte überweise den vollständigen Rechnungsbetrag innerhalb von 14 Tagen auf das unten stehende Konto.\n\nVielen Dank für deine Unterstützung!"
+      },
+      "email": {
+        "subject": "",
+        "body": ""
+      }
+    },
+    "cancellation": {
+      "message": "Sehr geehrter Kunde,\n\ngemäß unserer Absprache schreiben wir Ihnen die folgenden Beträge gut.",
+      "terms": "Vielen Dank für Ihr Vertrauen!",
+      "taxFreeTerms": "Gemäß § XXX UStG wird keine Umsatzsteuer berechnet.\n\nVielen Dank für Ihr Vertrauen!"
+    }
+  }
+}
