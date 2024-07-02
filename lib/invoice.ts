@@ -44,8 +44,10 @@ export interface InvoiceOptions {
     zip: string;
     city: string;
     email: string;
+    phone?: string;
     taxId?: string;
     ustId?: string;
+    hrId?: string;
     bankName: string;
     iban: string;
     bic: string;
@@ -312,6 +314,7 @@ export class Invoice {
     this.setText(_sender.street, { align: "right", marginTop: 2 })
     this.setText(`${_sender.zip} ${_sender.city}`, { align: "right", marginTop: 2 })
     this.setText(_sender.email, { align: "right", marginTop: 2 })
+    if (_sender.phone) this.setText(_sender.phone, { align: "right", marginTop: 2 })
     this.cursor.y += 40
 
     // recipient details
@@ -509,36 +512,43 @@ export class Invoice {
   generateFooter() {
     this.resetCursor("x")
     this.setText(this.options.invoice.terms, { marginTop: 40 })
+    this.setText(this.options.sender.name, { marginTop: 12, fontWeight: "bold" })
 
-    this.setText(this.options.sender.name, { marginTop: 40, fontWeight: "bold" })
-
+    this.cursor.y += 40
     if (this.options.sender.taxId) {
       this.resetCursor("x")
       this.setText("St.Nr.: ", { marginTop: 4, skipDown: true })
-      this.cursor.x += 40
+      this.cursor.x += 50
       this.setText(this.options.sender.taxId, { marginTop: 4 })
     }
 
     if (this.options.sender.ustId) {
       this.resetCursor("x")
       this.setText("USt.Id.: ", { marginTop: 4, skipDown: true })
-      this.cursor.x += 40
+      this.cursor.x += 50
       this.setText(this.options.sender.ustId, { marginTop: 4 })
+    }
+
+    if (this.options.sender.hrId) {
+      this.resetCursor("x")
+      this.setText("HR-Nr.: ", { marginTop: 4, skipDown: true })
+      this.cursor.x += 50
+      this.setText(this.options.sender.hrId, { marginTop: 4 })
     }
 
     this.resetCursor("x")
     this.setText("Bank: ", { marginTop: 8, skipDown: true })
-    this.cursor.x += 40
+    this.cursor.x += 50
     this.setText(this.options.sender.bankName, { marginTop: 8 })
 
     this.resetCursor("x")
     this.setText("IBAN: ", { marginTop: 4, skipDown: true })
-    this.cursor.x += 40
+    this.cursor.x += 50
     this.setText(this.options.sender.iban, { marginTop: 4 })
 
     this.resetCursor("x")
     this.setText("BIC: ", { marginTop: 4, skipDown: true })
-    this.cursor.x += 40
+    this.cursor.x += 50
     this.setText(this.options.sender.bic, { marginTop: 4 })
   }
 }

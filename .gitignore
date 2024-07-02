@@ -1,6 +1,7 @@
 # custom
-*.exe
+config.json
 Ordnerstruktur/
+*.exe
 
 # Logs
 logs

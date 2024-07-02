@@ -18,7 +18,10 @@ export interface Assistant {
     zip: string;
     city: string;
     email: string;
+    phone: string;
     taxId: string;
+    ustId: string;
+    hrId: string;
     bankName: string;
     iban: string;
     bic: string;
@@ -52,11 +55,14 @@ export class Assistant {
         zip: String(this.personSheet["B4"]?.v),
         city: this.personSheet["B5"]?.v,
         email: this.personSheet["B6"]?.v,
-        taxId: this.personSheet["B7"]?.v,
-        taxRate: Number(this.personSheet["B8"]?.v),
-        bankName: this.personSheet["B9"]?.v,
-        iban: this.personSheet["B10"]?.v,
-        bic: this.personSheet["B11"]?.v,
+        phone: this.personSheet["B7"]?.v,
+        taxId: this.personSheet["B8"]?.v,
+        ustId: this.personSheet["B9"]?.v,
+        hrId: this.personSheet["B10"]?.v,
+        taxRate: Number(this.personSheet["B11"]?.v),
+        bankName: this.personSheet["B12"]?.v,
+        iban: this.personSheet["B13"]?.v,
+        bic: this.personSheet["B14"]?.v,
       };
 
       let customersData = XLSX.utils.sheet_to_json(this.customersSheet);
