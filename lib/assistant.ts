@@ -199,7 +199,8 @@ export class Assistant {
         number: nextInvoiceNumber,
         taxRate: this.personalData.taxRate,
         message: config.texts.freelancer.message,
-        terms: this.personalData.taxRate > 0 ? config.texts.freelancer.invoice.terms : config.texts.freelancer.invoice.taxFreeTerms
+        terms: this.personalData.taxRate > 0 ? config.texts.freelancer.invoice.terms : config.texts.freelancer.invoice.taxFreeTerms,
+        logo: config.logo
       },
       sender: this.personalData,
       recipient: customer,
@@ -228,6 +229,7 @@ export class Assistant {
         taxRate: 19,
         message: config.texts.provision.invoice.message,
         terms: config.texts.provision.invoice.terms,
+        logo: config.logo
       },
       sender: config.provisionSender,
       recipient: this.personalData,

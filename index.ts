@@ -15,9 +15,8 @@ const config = await (Bun.file("config.json")).json();
       name: "action",
       choices: [
         "Rechnungen erstellen",
-        "Rechnung neu generieren",
         "Rechnung stornieren",
-        "Rechnung löschen"
+        "Rechnung neu generieren",
       ]
     }
   ]))["action"];
@@ -31,9 +30,6 @@ const config = await (Bun.file("config.json")).json();
       break;
     case "Rechnung stornieren":
       cancelInvoice();
-      break;
-    case "Rechnung löschen":
-      deleteInvoice();
       break;
   }
 })();
@@ -72,37 +68,6 @@ async function createInvoices() {
     .catch((error) => {
       if (error.isTtyError) {
         console.error("Prompt couldn't be rendered in the current environment");
-      } else {
-        console.error("Something went wrong!", error);
-      }
-    });
-}
-
-async function regenerateInvoice() {
-  inquirer
-    .prompt([
-      {
-        type: "input",
-        message: "Welche Rechnung soll neu generiert werden? (z.B. MYO-F001-0001)",
-        name: "invoiceNumber",
-      }
-    ]).then(async (answers) => {
-      try {
-        const invoiceOptions = await Bun.file(`${config.paths.invoiceOptionsDirectory}/${answers.invoiceNumber}.json`).json();
-
-        const invoice = new Invoice(invoiceOptions);
-        await saveInvoice(invoice);
-        console.info(`✅ Rechnung ${answers.invoiceNumber} wurde neu generiert\n`)
-      } catch(err) {
-        if (err.syscall === "open" && err.code === "ENOENT") {
-          console.error(`[FEHLER] Rechnungsnummer "${answers.invoiceNumber}" wurde nicht gefunden`);
-        } else {
-          console.error(err);
-        }
-      }
-    }).catch((error) => {
-      if (error.isTtyError) {
-        console.error("Prompt couldn't be rendered in the current environment")
       } else {
         console.error("Something went wrong!", error);
       }
@@ -155,22 +120,27 @@ async function cancelInvoice() {
 }
 
 
-async function deleteInvoice() {
+async function regenerateInvoice() {
   inquirer
     .prompt([
       {
         type: "input",
-        message: "Welche Rechnung soll gelöscht werden? (z.B. MYO-F001-0001)",
+        message: "Welche Rechnung soll neu generiert werden? (z.B. MYO-F001-0001)",
         name: "invoiceNumber",
-      },
-      {
-        type: "confirm",
-        message: "Die Löschung kann nicht rückgängig gemacht werden!!!\nBist du sicher, dass die Rechnung gelöscht werden soll?",
-        name: "confirm",
-        default: false
       }
     ]).then(async (answers) => {
-      console.log("Deleting invoice... (not implemented yet)");
+      try {
+        const invoiceOptions = await Bun.file(`${config.paths.invoiceOptionsDirectory}/${answers.invoiceNumber}.json`).json();
+        const invoice = new Invoice(invoiceOptions);
+        await saveInvoice(invoice, "regenerate");
+        console.info(`✅ Rechnung ${answers.invoiceNumber} wurde neu generiert\n`)
+      } catch(err) {
+        if (err.syscall === "open" && err.code === "ENOENT") {
+          console.error(`[FEHLER] Rechnungsnummer "${answers.invoiceNumber}" wurde nicht gefunden`);
+        } else {
+          console.error(err);
+        }
+      }
     }).catch((error) => {
       if (error.isTtyError) {
         console.error("Prompt couldn't be rendered in the current environment")

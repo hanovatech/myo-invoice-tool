@@ -1,5 +1,6 @@
 import { merge } from "lodash";
 import fs from "node:fs";
+
 const PDFDocument = require("pdfkit");
 
 export interface Invoice {
@@ -21,6 +22,7 @@ export interface InvoiceOptions {
     message: string;
     terms: string;
     taxRate: number;
+    logo?: string;
     createdAt?: string;
   };
   document: {
@@ -298,7 +300,7 @@ export class Invoice {
     });
   }
 
-  generateHeader() {
+  async generateHeader() {
     this.setCursor("x", this.options.document?.marginLeft || this.defaultOptions.document.marginLeft);
     this.setCursor("y", this.options.document?.marginTop || this.defaultOptions.document.marginTop);
 
@@ -308,6 +310,13 @@ export class Invoice {
     const _items = this.options.items
     const _maxWidth = this.document.page.width - (this.options.document.marginLeft + this.options.document.marginRight);
     const _recipientWidth = _maxWidth * .5
+
+    // add logo
+    if (this.options.invoice.logo) {
+      this.document.image(this.options.invoice.logo, this.options.document.marginLeft, this.options.document.marginTop, { width: 100 });
+      this.setCursor("x", this.options.document?.marginLeft || this.defaultOptions.document.marginLeft);
+      this.setCursor("y", this.options.document?.marginTop || this.defaultOptions.document.marginTop);
+    }
 
     // sender details
     this.setText(_sender.name, { align: "right", fontWeight: "bold" })
