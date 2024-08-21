@@ -1,7 +1,9 @@
+import fs from "node:fs";
 import * as XLSX from "xlsx";
 import { Invoice } from "./invoice";
 import { getNextInvoiceNumber, saveInvoice } from "./utils";
-const config = await (Bun.file("./config.json")).json();
+
+const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 
 export interface Assistant {
   path: string;
@@ -9,7 +11,6 @@ export interface Assistant {
   personSheet: XLSX.WorkSheet;
   servicesSheet: XLSX.WorkSheet;
   customersSheet: XLSX.WorkSheet;
-  invoiceWorkbook: XLSX.WorkBook;
 
   personalData: {
     id: string;
@@ -35,18 +36,10 @@ export interface Assistant {
 export class Assistant {
   constructor(name: string) {
     this.path = `${config.paths.freelancerDirectory}/${name}/Zeiterfassung.xlsx`;
-  }
-
-  async initialize(): Promise<void> {
-    return new Promise(async (resolve) => {
-      const assistantWorkbookFile = Bun.file(this.path);
-      this.workbook = XLSX.read(await assistantWorkbookFile.arrayBuffer(), { type: "buffer" });
+    this.workbook = XLSX.readFile(this.path);
       this.personSheet = this.workbook.Sheets["Persönliche Daten"];
       this.servicesSheet = this.workbook.Sheets["Leistungen"];
       this.customersSheet = this.workbook.Sheets["Kunden"];
-
-      const invoiceWorkbookFile = Bun.file(config.paths.invoicesExcelFile);
-      this.invoiceWorkbook = XLSX.read(await invoiceWorkbookFile.arrayBuffer(), { type: "buffer" });
 
       this.personalData = {
         id: this.personSheet["B1"]?.v,
@@ -89,9 +82,6 @@ export class Assistant {
           price: Number(s[" Netto "])
         }
       });
-
-      return resolve();
-    });
   }
 
   async generateInvoices(worksheet: string) {

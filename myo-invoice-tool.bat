@@ -1,3 +1,3 @@
-bun index.ts
-ECHO "Fenster kann jetzt geschlossen werden..."
+tsx index.ts
+ECHO "Vorgang abgeschlossen, das Fenster kann jetzt geschlossen werden..."
 PAUSE >nul

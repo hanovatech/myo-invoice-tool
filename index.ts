@@ -1,11 +1,11 @@
+import fs from "node:fs";
 import inquirer from 'inquirer';
 import { readdir } from 'node:fs/promises';
 import { Assistant } from "./lib/assistant";
 import { Invoice } from "./lib/invoice";
-import { getNextInvoiceNumber, saveInvoice } from "./lib/utils";
+import { getNextInvoiceNumber, saveInvoice, deleteInvoice } from "./lib/utils";
 
-const config = await (Bun.file("config.json")).json();
-
+const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 
 (async () => {
   const action = (await inquirer.prompt([
@@ -17,25 +17,32 @@ const config = await (Bun.file("config.json")).json();
         "Rechnungen erstellen",
         "Rechnung stornieren",
         "Rechnung neu generieren",
+        "Rechnung löschen",
       ]
     }
   ]))["action"];
 
   switch (action) {
     case "Rechnungen erstellen":
-      createInvoices();
+      createInvoicesCommand();
       break;
     case "Rechnung neu generieren":
-      regenerateInvoice();
+      regenerateInvoiceCommand();
       break;
     case "Rechnung stornieren":
-      cancelInvoice();
+      cancelInvoiceCommand();
+      break;
+    case "Rechnung stornieren":
+      cancelInvoiceCommand();
+      break;
+    case "Rechnung löschen":
+      deleteInvoiceCommand();
       break;
   }
 })();
 
 
-async function createInvoices() {
+async function createInvoicesCommand() {
   let freelancerNames = await readdir(config.paths.freelancerDirectory);
   freelancerNames = freelancerNames.filter((fileName) => !fileName.startsWith("."));
   const assistants = freelancerNames.map((c) => ({ name: c }));
@@ -58,7 +65,6 @@ async function createInvoices() {
       try {
         for (const name of answers.assistants) {
           const assistant = new Assistant(name);
-          await assistant.initialize();
           assistant.generateInvoices(answers.worksheet);
         }
       } catch(err) {
@@ -75,7 +81,7 @@ async function createInvoices() {
 }
 
 
-async function cancelInvoice() {
+async function cancelInvoiceCommand() {
   inquirer
     .prompt([
       {
@@ -85,11 +91,12 @@ async function cancelInvoice() {
       }
     ]).then(async (answers) => {
       try {
-        const invoiceOptions = await Bun.file(`${config.paths.invoiceOptionsDirectory}/${answers.invoiceNumber}.json`).json();
+        const invoiceOptions = JSON.parse(fs.readFileSync(`${config.paths.invoiceOptionsDirectory}/${answers.invoiceNumber}.json`, 'utf8'));
 
+        invoiceOptions.invoice.type = "ST"
         invoiceOptions.invoice.name = `Stornorechnung für ${invoiceOptions.invoice.number}`;
-        invoiceOptions.invoice.message = config.texts.cancellation.message;
-        invoiceOptions.invoice.terms = invoiceOptions.invoice.taxRate === 0 ? config.texts.cancellation.taxFreeTerms : config.texts.cancellation.terms;
+        invoiceOptions.invoice.message = config.texts.cancellation.invoice.message;
+        invoiceOptions.invoice.terms = invoiceOptions.invoice.taxRate === 0 ? config.texts.cancellation.invoice.taxFreeTerms : config.texts.cancellation.invoice.terms;
         invoiceOptions.items = invoiceOptions.items.map((item) => {
           return {
             ...item,
@@ -120,17 +127,17 @@ async function cancelInvoice() {
 }
 
 
-async function regenerateInvoice() {
+async function regenerateInvoiceCommand() {
   inquirer
     .prompt([
       {
         type: "input",
-        message: "Welche Rechnung soll neu generiert werden? (z.B. MYO-F001-0001)",
+        message: "Welche Rechnung soll neu generiert werden? (z.B. KY-RE-0001)",
         name: "invoiceNumber",
       }
     ]).then(async (answers) => {
       try {
-        const invoiceOptions = await Bun.file(`${config.paths.invoiceOptionsDirectory}/${answers.invoiceNumber}.json`).json();
+        const invoiceOptions = JSON.parse(fs.readFileSync(`${config.paths.invoiceOptionsDirectory}/${answers.invoiceNumber}.json`, 'utf8'));
         const invoice = new Invoice(invoiceOptions);
         await saveInvoice(invoice, "regenerate");
         console.info(`✅ Rechnung ${answers.invoiceNumber} wurde neu generiert\n`)
@@ -141,6 +148,34 @@ async function regenerateInvoice() {
           console.error(err);
         }
       }
+    }).catch((error) => {
+      if (error.isTtyError) {
+        console.error("Prompt couldn't be rendered in the current environment")
+      } else {
+        console.error("Something went wrong!", error);
+      }
+    });
+}
+
+async function deleteInvoiceCommand() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "Welche Rechnung soll gelöscht werden? (z.B. KY-RE-0001)",
+        name: "invoiceNumber",
+      },
+      {
+        type: "confirm",
+        message: "Die Löschung kann nicht rückgängig gemacht werden. Bist du sicher?",
+        name: "confirm",
+      }
+    ]).then(async (answers) => {
+      if (!answers.confirm) return console.info("Vorgang abgebrochen\n");
+      const invoiceOptions = JSON.parse(fs.readFileSync(`${config.paths.invoiceOptionsDirectory}/${answers.invoiceNumber}.json`, 'utf8'));
+      const invoice = new Invoice(invoiceOptions);
+      await deleteInvoice(invoice);
+      console.info(`✅ Rechnung ${answers.invoiceNumber} wurde gelöscht\n`)
     }).catch((error) => {
       if (error.isTtyError) {
         console.error("Prompt couldn't be rendered in the current environment")

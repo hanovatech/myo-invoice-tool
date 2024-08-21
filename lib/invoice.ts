@@ -16,6 +16,7 @@ export interface Invoice {
 
 export interface InvoiceOptions {
   invoice: {
+    type: "RE" | "ST";
     number: string;
     date: string;
     name: string;
@@ -40,7 +41,7 @@ export interface InvoiceOptions {
     };
   };
   sender: {
-    id?: string;
+    id: string;
     name: string;
     street: string;
     zip: string;
@@ -73,6 +74,7 @@ export interface InvoiceOptions {
 
 export interface InvoiceDefaultOptions {
   invoice: {
+    type: "RE" | "ST";
     name: string;
     date: string;
     message: string;
@@ -115,6 +117,7 @@ export class Invoice {
   constructor(options: InvoiceOptions) {
     this.defaultOptions = {
       invoice: {
+        type: "RE",
         name: "Rechnung",
         date: (new Date()).toLocaleDateString("de"),
         taxRate: 19,

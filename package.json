@@ -1,19 +1,21 @@
 {
   "name": "myo-invoice-tool",
-  "module": "index.ts",
-  "devDependencies": {
-    "@types/bun": "latest",
-    "@types/inquirer": "^9.0.7",
-    "@types/lodash": "^4.17.1"
-  },
+  "main": "index.ts",
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
-  "type": "module",
   "dependencies": {
+    "@prisma/client": "^5.18.0",
     "inquirer": "^9.2.20",
     "lodash": "^4.17.21",
     "pdfkit": "^0.15.0",
     "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.3.0",
+    "prisma": "^5.18.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.17.0",
+    "typescript": "^5.5.4"
   }
 }
