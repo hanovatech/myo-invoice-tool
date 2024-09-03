@@ -16,8 +16,8 @@ const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
       choices: [
         "Rechnungen erstellen",
         "Rechnung stornieren",
-        "Rechnung neu generieren",
         "Rechnung löschen",
+        "Rechnung neu generieren",
       ]
     }
   ]))["action"];
@@ -26,17 +26,14 @@ const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
     case "Rechnungen erstellen":
       createInvoicesCommand();
       break;
-    case "Rechnung neu generieren":
-      regenerateInvoiceCommand();
-      break;
-    case "Rechnung stornieren":
-      cancelInvoiceCommand();
-      break;
     case "Rechnung stornieren":
       cancelInvoiceCommand();
       break;
     case "Rechnung löschen":
       deleteInvoiceCommand();
+      break;
+    case "Rechnung neu generieren":
+      regenerateInvoiceCommand();
       break;
   }
 })();
@@ -126,6 +123,34 @@ async function cancelInvoiceCommand() {
     });
 }
 
+async function deleteInvoiceCommand() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "Welche Rechnung soll gelöscht werden? (z.B. KY-RE-0001)",
+        name: "invoiceNumber",
+      },
+      {
+        type: "confirm",
+        message: "Die Löschung kann nicht rückgängig gemacht werden. Bist du sicher?",
+        name: "confirm",
+      }
+    ]).then(async (answers) => {
+      if (!answers.confirm) return console.info("Vorgang abgebrochen\n");
+      const invoiceOptions = JSON.parse(fs.readFileSync(`${config.paths.invoiceOptionsDirectory}/${answers.invoiceNumber}.json`, 'utf8'));
+      const invoice = new Invoice(invoiceOptions);
+      await deleteInvoice(invoice);
+      console.info(`✅ Rechnung ${answers.invoiceNumber} wurde gelöscht\n`)
+    }).catch((error) => {
+      if (error.isTtyError) {
+        console.error("Prompt couldn't be rendered in the current environment")
+      } else {
+        console.error("Something went wrong!", error);
+      }
+    });
+}
+
 
 async function regenerateInvoiceCommand() {
   inquirer
@@ -148,34 +173,6 @@ async function regenerateInvoiceCommand() {
           console.error(err);
         }
       }
-    }).catch((error) => {
-      if (error.isTtyError) {
-        console.error("Prompt couldn't be rendered in the current environment")
-      } else {
-        console.error("Something went wrong!", error);
-      }
-    });
-}
-
-async function deleteInvoiceCommand() {
-  inquirer
-    .prompt([
-      {
-        type: "input",
-        message: "Welche Rechnung soll gelöscht werden? (z.B. KY-RE-0001)",
-        name: "invoiceNumber",
-      },
-      {
-        type: "confirm",
-        message: "Die Löschung kann nicht rückgängig gemacht werden. Bist du sicher?",
-        name: "confirm",
-      }
-    ]).then(async (answers) => {
-      if (!answers.confirm) return console.info("Vorgang abgebrochen\n");
-      const invoiceOptions = JSON.parse(fs.readFileSync(`${config.paths.invoiceOptionsDirectory}/${answers.invoiceNumber}.json`, 'utf8'));
-      const invoice = new Invoice(invoiceOptions);
-      await deleteInvoice(invoice);
-      console.info(`✅ Rechnung ${answers.invoiceNumber} wurde gelöscht\n`)
     }).catch((error) => {
       if (error.isTtyError) {
         console.error("Prompt couldn't be rendered in the current environment")
