@@ -12,6 +12,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@types/inquirer": "^9.0.7",
     "@types/node": "^22.3.0",
     "prisma": "^5.18.0",
     "ts-node": "^10.9.2",
