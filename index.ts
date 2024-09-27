@@ -18,6 +18,7 @@ const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
         "Rechnung stornieren",
         "Rechnung löschen",
         "Rechnung neu generieren",
+        "Abbrechen"
       ]
     }
   ]))["action"];
@@ -35,13 +36,15 @@ const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
     case "Rechnung neu generieren":
       regenerateInvoiceCommand();
       break;
+    default:
+      return;
   }
 })();
 
 
 async function createInvoicesCommand() {
   let freelancerNames = await readdir(config.paths.freelancerDirectory);
-  freelancerNames = freelancerNames.filter((fileName) => !fileName.startsWith("."));
+  freelancerNames = freelancerNames.filter((fileName) => !fileName.startsWith(".") || !fileName.includes("ORGA"));
   const assistants = freelancerNames.map((c) => ({ name: c }));
 
   inquirer
